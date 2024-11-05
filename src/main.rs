@@ -1,6 +1,7 @@
 use std::env;
 
-use cmd::{callback, command, inline_query};
+use cmd::{callback, command};
+use dotenv::dotenv;
 use teloxide::{dispatching::UpdateFilterExt, dptree, prelude::Dispatcher, types::Update, Bot};
 mod cmd;
 
