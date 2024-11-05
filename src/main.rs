@@ -32,7 +32,6 @@ async fn init() -> Result<(), Box<dyn std::error::Error>> {
     // Create a handler for our bot, that will process updates from Telegram
     let handler = dptree::entry()
         .branch(Update::filter_message().endpoint(command::handler))
-        .branch(Update::filter_inline_query().endpoint(inline_query::handler))
         .branch(Update::filter_callback_query().endpoint(callback::handler));
 
     Dispatcher::builder(bot, handler)
