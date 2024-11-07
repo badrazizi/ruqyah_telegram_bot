@@ -1,7 +1,5 @@
+use cmd::{callback, command, db};
 use std::env;
-
-use cmd::{callback, command};
-use dotenv::dotenv;
 use teloxide::{dispatching::UpdateFilterExt, dptree, prelude::Dispatcher, types::Update, Bot};
 mod cmd;
 
@@ -29,6 +27,8 @@ fn main() {
 }
 
 async fn init() -> Result<(), Box<dyn std::error::Error>> {
+    let _ = db::init_tables();
+
     let bot = Bot::new(env!("TELEGRAM_BOT_TOKEN"));
     // Create a handler for our bot, that will process updates from Telegram
     let handler = dptree::entry()
