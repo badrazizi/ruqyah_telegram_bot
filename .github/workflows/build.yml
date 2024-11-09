@@ -6,28 +6,63 @@ on:
 
 jobs:
   release:
-    runs-on: ubuntu-latest
-
-    name: release ${{ matrix.target }}
+    permissions:
+      contents: write
+      packages: write
+    name: Release - ${{ matrix.platform.os-name }}
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - target: x86_64-pc-windows-gnu
-          - target: x86_64-unknown-linux-musl
-          - target: aarch64-unknown-linux-gnu
-          - target: armv7-unknown-linux-gnueabihf
-    steps:
-      - name: Install packages
-        run: |
-          sudo apt-get install -y build-essential make pkg-config perl libudev-dev libssl-dev
+        platform:
+          - os-name: Linux-x86_64
+            runs-on: ubuntu-20.04
+            target: x86_64-unknown-linux-musl
+            run: sudo apt-get update --yes && sudo apt-get install --yes make pkg-config openssl libssl-dev
+
+          - os-name: Linux-aarch64
+            runs-on: ubuntu-20.04
+            target: aarch64-unknown-linux-musl
+            run: sudo apt-get update --yes && sudo apt-get install --yes make pkg-config openssl libssl-dev
+
+          - os-name: Linux-armv7
+            runs-on: ubuntu-20.04
+            target: armv7-unknown-linux-gnueabihf
+            run: sudo apt-get update --yes && sudo apt-get install --yes make pkg-config openssl libssl-dev
+
+          - os-name: Windows-x86_64
+            runs-on: windows-latest
+            target: x86_64-pc-windows-msvc
+
+          - os-name: Windows-arm
+            runs-on: windows-latest
+            target: aarch64-pc-windows-msvc
+
+          - os-name: macOS-x86_64
+            runs-on: macOS-latest
+            target: x86_64-apple-darwin
           
-      - uses: actions/checkout@master
-      - name: Compile and release
-        uses: rust-build/rust-build.action@v1.4.5
+          - os-name: macOS-arm
+            runs-on: macOS-latest
+            target: aarch64-apple-darwin
+
+    runs-on: ${{ matrix.platform.runs-on }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: install SSL packages
+        run: ${{ matrix.platform.run }}
+      - name: Build binary
+        uses: houseabsolute/actions-rust-cross@v0
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          RUSTTARGET: ${{ matrix.target }}
-          ARCHIVE_TYPES: ${{ matrix.archive }}
+          command: ${{ matrix.platform.command }}
+          target: ${{ matrix.platform.target }}
+          args: "--locked --release"
+          strip: true
+      - name: Publish artifacts and release
+        uses: houseabsolute/actions-rust-release@v0
+        with:
+          executable-name: ubi
+          target: ${{ matrix.platform.target }}
+        if: matrix.toolchain == 'stable'
