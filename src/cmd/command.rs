@@ -1,7 +1,9 @@
-use super::selection::make_keyboard;
-use crate::cmd::options::{Command, Language};
+use super::{
+    db::is_user_new,
+    options::{GetKeybard, Start},
+};
+use crate::cmd::options::Command;
 use std::error::Error;
-use strum::IntoEnumIterator;
 use teloxide::{
     payloads::SendMessageSetters,
     prelude::Requester,
@@ -15,21 +17,18 @@ pub async fn handler(bot: Bot, msg: Message, me: Me) -> Result<(), Box<dyn Error
         match BotCommands::parse(text, me.username()) {
             Ok(Command::Start) => {
                 if let Some(user) = msg.from {
-                    let username = user.clone().username.unwrap_or_else(|| user.full_name());
-                    bot.send_message(
-                        msg.chat.id,
-                        format!("أهلا {} بك في بوت الرقية الشرعية", username),
-                    )
-                    .await?;
-                }
+                    let id = user.id.0 as i64;
 
-                let keyboard = make_keyboard(Language::iter().map(|lang| lang.to_string()));
-                bot.send_message(
-                    msg.chat.id,
-                    "الرجاء إختيار اللغة:\nPlease choose a language:",
-                )
-                .reply_markup(keyboard)
-                .await?;
+                    let username = user.username.unwrap_or(user.first_name);
+                    let is_user_new = is_user_new(username, id);
+                    if is_user_new {
+                        bot.send_message(msg.chat.id, "أهلا بك في بوت الرقية الشرعية")
+                            .await?;
+                    }
+                }
+                bot.send_message(msg.chat.id, "الاختيارات الرئيسية:")
+                    .reply_markup(Start::keyboards())
+                    .await?;
             }
 
             Err(_) => {

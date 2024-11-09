@@ -1,18 +1,28 @@
-use teloxide::utils::command::BotCommands;
+use teloxide::{
+    types::{InlineKeyboardButton, InlineKeyboardMarkup},
+    utils::command::BotCommands,
+};
 
-pub trait OptionsPair {
-    fn get_options() -> Vec<(String, String)>;
+pub trait GetKeybard {
+    fn keyboards() -> InlineKeyboardMarkup;
 }
 
 #[derive(BotCommands)]
-#[command(rename_rule = "PascalCase")]
+#[command(rename_rule = "lowercase")]
 pub enum Command {
     Start,
 }
 
-impl OptionsPair for Command {
-    fn get_options() -> Vec<(String, String)> {
-        vec![("أبداء".to_string(), "/Start".to_string())]
+impl GetKeybard for Command {
+    fn keyboards() -> InlineKeyboardMarkup {
+        let mut keyboard: Vec<Vec<InlineKeyboardButton>> = vec![];
+
+        keyboard.push(vec![InlineKeyboardButton::callback(
+            "أبداء".to_string(),
+            "/start".to_string(),
+        )]);
+
+        InlineKeyboardMarkup::new(keyboard)
     }
 }
 
@@ -21,26 +31,27 @@ impl OptionsPair for Command {
 pub enum Start {
     Ruqyah,
     AboutRuqyah,
-    RulingRuqyah,
-    VirtueOfRuqyah,
     AboutBot,
 }
 
-impl OptionsPair for Start {
-    fn get_options() -> Vec<(String, String)> {
-        vec![
-            ("الرقية الشرعية".to_string(), "/Ruqyah".to_string()),
-            ("عن الرقية الشرعية".to_string(), "/AboutRuqyah".to_string()),
-            (
-                "حكم الرقية الشرعية".to_string(),
-                "/RulingRuqyah".to_string(),
-            ),
-            (
-                "فضل الرقية الشرعية".to_string(),
-                "/VirtueOfRuqyah".to_string(),
-            ),
-            ("عن البوت".to_string(), "/AboutBot".to_string()),
-        ]
+impl GetKeybard for Start {
+    fn keyboards() -> InlineKeyboardMarkup {
+        let mut keyboard: Vec<Vec<InlineKeyboardButton>> = vec![];
+        keyboard.push(vec![InlineKeyboardButton::callback(
+            "الرقية الشرعية".to_string(),
+            "/Ruqyah".to_string(),
+        )]);
+
+        keyboard.push(vec![InlineKeyboardButton::callback(
+            "عن الرقية الشرعية".to_string(),
+            "/AboutRuqyah".to_string(),
+        )]);
+        keyboard.push(vec![InlineKeyboardButton::callback(
+            "عن البوت".to_string(),
+            "/AboutBot".to_string(),
+        )]);
+
+        InlineKeyboardMarkup::new(keyboard)
     }
 }
 
@@ -49,19 +60,51 @@ impl OptionsPair for Start {
 pub enum Ruqyah {
     RuqyahFromTheHolyQuran,
     RuqyahFromTheNoblePropheticSunnah,
+    VideoSheikhWahidBali,
+    RuqyahForTheLoverDemon,
+    RuqyahForKids,
+    PrayerToBreakTheSpell,
+    Back1,
 }
 
-impl OptionsPair for Ruqyah {
-    fn get_options() -> Vec<(String, String)> {
-        vec![
-            (
-                "الرقية الشرعية من القرآن الكريم".to_string(),
-                "/RuqyahFromTheHolyQuran".to_string(),
+impl GetKeybard for Ruqyah {
+    fn keyboards() -> InlineKeyboardMarkup {
+        let mut keyboard: Vec<Vec<InlineKeyboardButton>> = vec![];
+        keyboard.push(vec![InlineKeyboardButton::callback(
+            "الرقية الشرعية من القرآن الكريم".to_string(),
+            "/RuqyahFromTheHolyQuran".to_string(),
+        )]);
+        keyboard.push(vec![InlineKeyboardButton::callback(
+            "الرقية الشرعية من السنة النبوية الشريفة".to_string(),
+            "/RuqyahFromTheNoblePropheticSunnah".to_string(),
+        )]);
+
+        keyboard.push(vec![InlineKeyboardButton::callback(
+            "علاج العين والحسد للشيخ وحيد بالي".to_string(),
+            "/VideoSheikhWahidBali".to_string(),
+        )]);
+
+        keyboard.push(vec![
+            InlineKeyboardButton::callback(
+                "رقية المس العاشق".to_string(),
+                "/RuqyahForTheLoverDemon".to_string(),
             ),
-            (
-                "الرقية الشرعية من السنة النبوية الشريفة".to_string(),
-                "/RuqyahFromTheNoblePropheticSunnah".to_string(),
+            InlineKeyboardButton::callback(
+                "رقية الاطفال".to_string(),
+                "/RuqyahForKids".to_string(),
             ),
-        ]
+        ]);
+
+        keyboard.push(vec![InlineKeyboardButton::callback(
+            "دعاء لفك السحر".to_string(),
+            "/PrayerToBreakTheSpell".to_string(),
+        )]);
+
+        keyboard.push(vec![InlineKeyboardButton::callback(
+            "رجوع".to_string(),
+            "/Back1".to_string(),
+        )]);
+
+        InlineKeyboardMarkup::new(keyboard)
     }
 }
