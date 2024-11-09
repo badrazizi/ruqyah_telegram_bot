@@ -10,7 +10,6 @@ teloxide = { version = "0.13", features = ["macros"] }
 tokio = { version = "1.41.0", features = ["rt-multi-thread", "macros"] }
 rusqlite = { version = "0.32.1", features = ["bundled"] }
 chrono = "0.4.38"
-openssl = { version = "0.10.68", features = ["vendored"] }
 
 [build-dependencies]
 dotenv = "0.15.0"
