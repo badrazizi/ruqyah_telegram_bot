@@ -5,3 +5,4 @@ Dockerfile*
 *.sh
 *.bat
 *.py
+*.json
