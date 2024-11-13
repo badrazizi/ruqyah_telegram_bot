@@ -65,4 +65,3 @@ jobs:
         with:
           executable-name: ubi
           target: ${{ matrix.platform.target }}
-        if: matrix.toolchain == 'stable'
